@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import tempfile
 import os
+import json
 
 # ------------------ PAGE CONFIG ------------------
 st.set_page_config(page_title="Tuna Migration Map - Sharjah", layout="wide")
@@ -29,16 +30,24 @@ fish_type = st.sidebar.selectbox("Fish Ecotype", ["Juvenile", "Migratory", "Resi
 if "fish_data" not in st.session_state:
     st.session_state.fish_data = []
 
+if "drawn_shapes" not in st.session_state:
+    st.session_state.drawn_shapes = []
+
 if st.sidebar.button("Add Fish Marker"):
     st.session_state.fish_data.append({"lat": lat, "lon": lon, "type": fish_type})
 
 if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
-    st.rerun()
+    st.session_state.drawn_shapes.clear()
+    st.experimental_rerun()
+
+# ------------------ SIDEBAR: DRAW COLOR ------------------
+draw_color = st.sidebar.color_picker("Select Drawing Color", "#3388ff")  # default Leaflet blue
 
 # ------------------ MAP ------------------
 m = folium.Map(location=[25.35, 55.4], zoom_start=11)
 
+# Add fish markers
 fish_styles = {
     "Juvenile": {"color": "blue", "icon": "fish"},
     "Migratory": {"color": "green", "icon": "fish"},
@@ -53,26 +62,17 @@ for fish in st.session_state.fish_data:
         icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
     ).add_to(m)
 
-
-
-# ------------------ SIDEBAR: DRAW COLOR ------------------
-draw_color = st.sidebar.color_picker("Select Drawing Color", "#3388ff")  # default Leaflet blue
+# Add previous drawn shapes
+for shape in st.session_state.drawn_shapes:
+    folium.GeoJson(shape).add_to(m)
 
 # ------------------ ADD DRAWING TOOL ------------------
 draw = Draw(
     draw_options={
-        'polyline': {
-            'shapeOptions': {'color': draw_color, 'weight': 4, 'opacity': 0.8}
-        },
-        'polygon': {
-            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
-        },
-        'circle': {
-            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
-        },
-        'rectangle': {
-            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
-        },
+        'polyline': {'shapeOptions': {'color': draw_color, 'weight': 4, 'opacity': 0.8}},
+        'polygon': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
+        'circle': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
+        'rectangle': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
         'marker': False,
         'circlemarker': False
     },
@@ -80,8 +80,7 @@ draw = Draw(
 )
 draw.add_to(m)
 
-
-# Legend with black text
+# ------------------ LEGEND ------------------
 legend_html = """
      <div style="
      position: fixed; 
@@ -98,11 +97,14 @@ legend_html = """
 m.get_root().html.add_child(folium.Element(legend_html))
 
 # ------------------ DISPLAY MAP ------------------
-st_folium(m, width=900, height=600)
+map_data = st_folium(m, width=900, height=600, returned_objects=["all_drawings"])
+
+# Store drawn shapes in session state
+if map_data and "all_drawings" in map_data:
+    st.session_state.drawn_shapes = map_data["all_drawings"]
 
 # ------------------ DOWNLOAD AS INTERACTIVE HTML ------------------
 map_html = m._repr_html_().encode("utf-8")
-
 st.download_button(
     label="📥 Download Map as HTML (Interactive)",
     data=map_html,
@@ -110,11 +112,8 @@ st.download_button(
     mime="text/html"
 )
 
-
-
 # ------------------ FOOTER ------------------
 st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
-
