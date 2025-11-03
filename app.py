@@ -42,8 +42,8 @@ st.markdown(
 
 # ------------------ SIDEBAR: FISH OBSERVATION ------------------
 st.sidebar.header("Add Fish Observation")
-lat = st.sidebar.number_input("Latitude (°N)", min_value=24.0, max_value=26.0, value=25.35, step=0.0001)
-lon = st.sidebar.number_input("Longitude (°E)", min_value=55.0, max_value=56.5, value=55.4, step=0.0001)
+lat = st.sidebar.number_input("Latitude (°N)", min_value=20.0, max_value=30.0, value=25.35, step=0.0001)
+lon = st.sidebar.number_input("Longitude (°E)", min_value=50, max_value=60, value=55.4, step=0.0001)
 fish_type = st.sidebar.selectbox("Fish Ecotype", ["Juvenile", "Migratory", "Resident"])
 
 # ------------------ SESSION STATE ------------------
@@ -88,7 +88,7 @@ with map_col:
     background-color: rgba(255, 255, 255, 0.85);
     border:2px solid grey; z-index:9999; font-size:14px;
     border-radius: 8px; padding: 10px; color: black;">
-    <b>Fish Ecotype Legend</b><br>
+    <b>Fish Ecotype</b><br>
     <i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
     <i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
     <i class="fa fa-fish fa-1x" style="color:red"></i>&nbsp; Resident
