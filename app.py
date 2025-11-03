@@ -55,8 +55,7 @@ if st.sidebar.button("Add Fish Marker"):
 
 if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
-    st.success("All markers cleared!")
-    st.stop()  # stops script and safely reruns
+    st.success("All markers cleared!")  # map will still render
 
 # ------------------ MAP AND INSTRUCTIONS ------------------
 st.subheader("🐟 Tuna Migration Map")
@@ -176,6 +175,7 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
 
