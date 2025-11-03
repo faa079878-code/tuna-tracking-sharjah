@@ -1,6 +1,12 @@
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+from io import BytesIO
+import base64
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import tempfile
+import os
 
 # ------------------ PAGE CONFIG ------------------
 st.set_page_config(page_title="Tuna Migration Map - Sharjah", layout="wide")
@@ -69,7 +75,7 @@ legend_html = """
      background-color: rgba(255, 255, 255, 0.85);
      border:2px solid grey; z-index:9999; font-size:14px;
      border-radius: 8px; padding: 10px; color: black;">
-     <b>Fish Ecotype</b><br>
+     <b>Fish Ecotype Legend</b><br>
      <i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
      <i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
      <i class="fa fa-fish fa-1x" style="color:red"></i>&nbsp; Resident
@@ -80,6 +86,42 @@ m.get_root().html.add_child(folium.Element(legend_html))
 # ------------------ DISPLAY MAP ------------------
 st.markdown("### 🗺️ Sharjah Beach - Tuna Sightings Map")
 st_folium(m, width=900, height=600)
+
+# ------------------ DOWNLOAD MAP SECTION ------------------
+st.markdown("### 📥 Download the Current Map View")
+
+# Generate the map HTML temporarily
+tempdir = tempfile.mkdtemp()
+map_path = os.path.join(tempdir, "map.html")
+m.save(map_path)
+
+def get_map_screenshot(html_path):
+    """Render map HTML in a headless browser and return PNG bytes."""
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1200,800")
+
+    with webdriver.Chrome(options=options) as driver:
+        driver.get(f"file://{html_path}")
+        screenshot = driver.get_screenshot_as_png()
+    return screenshot
+
+# Button to download as image
+if st.button("📸 Capture and Download Map Image"):
+    try:
+        image_bytes = get_map_screenshot(map_path)
+        st.success("Map image captured successfully!")
+        st.download_button(
+            label="Download Map Image (PNG)",
+            data=image_bytes,
+            file_name="sharjah_tuna_map.png",
+            mime="image/png"
+        )
+    except Exception as e:
+        st.error("Unable to capture image on this platform (try running locally).")
+        st.info("Note: Streamlit Cloud may block browser automation; run locally for image export.")
 
 # ------------------ FOOTER ------------------
 st.markdown("""
