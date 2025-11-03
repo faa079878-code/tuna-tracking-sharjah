@@ -81,19 +81,7 @@ st.download_button(
     mime="text/html"
 )
 
-# Create download button
-if st.button("📥 Download Map as Image (PNG)"):
-    try:
-        image_bytes = get_map_image(m)
-        st.download_button(
-            label="⬇️ Click to Save Map Image",
-            data=image_bytes,
-            file_name="sharjah_tuna_map.png",
-            mime="image/png"
-        )
-    except Exception:
-        st.error("❌ Image download not supported on this platform. Try running locally.")
-        st.info("To use this feature, run Streamlit locally with Chrome installed.")
+
 
 # ------------------ FOOTER ------------------
 st.markdown("""
