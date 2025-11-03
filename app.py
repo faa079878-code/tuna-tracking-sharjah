@@ -39,7 +39,7 @@ if st.sidebar.button("Add Fish Marker"):
 # Option to clear all data safely
 if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
-    st.rerun()  # ✅ replaces deprecated st.experimental_rerun()
+    st.rerun()
 
 # ------------------ MAP SETUP ------------------
 # Center map around Sharjah
@@ -60,6 +60,22 @@ for fish in st.session_state.fish_data:
         tooltip=f"{fish['type']} Fish\nLat: {fish['lat']:.4f}, Lon: {fish['lon']:.4f}",
         icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
     ).add_to(m)
+
+# ------------------ ADD LEGEND ------------------
+legend_html = """
+     <div style="
+     position: fixed; 
+     bottom: 50px; left: 50px; width: 180px; height: 120px; 
+     background-color: rgba(255, 255, 255, 0.85);
+     border:2px solid grey; z-index:9999; font-size:14px;
+     border-radius: 8px; padding: 10px;">
+     <b>Fish Ecotype Legend</b><br>
+     <i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
+     <i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
+     <i class="fa fa-fish fa-1x" style="color:red"></i>&nbsp; Resident
+     </div>
+"""
+m.get_root().html.add_child(folium.Element(legend_html))
 
 # ------------------ DISPLAY MAP ------------------
 st.markdown("### 🗺️ Sharjah Beach - Tuna Sightings Map")
