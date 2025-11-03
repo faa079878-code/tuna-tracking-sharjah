@@ -67,6 +67,33 @@ draw = Draw(
 )
 draw.add_to(m)
 
+
+# ------------------ SIDEBAR: DRAW COLOR ------------------
+draw_color = st.sidebar.color_picker("Select Drawing Color", "#3388ff")  # default Leaflet blue
+
+# ------------------ ADD DRAWING TOOL ------------------
+draw = Draw(
+    draw_options={
+        'polyline': {
+            'shapeOptions': {'color': draw_color, 'weight': 4, 'opacity': 0.8}
+        },
+        'polygon': {
+            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
+        },
+        'circle': {
+            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
+        },
+        'rectangle': {
+            'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}
+        },
+        'marker': False,
+        'circlemarker': False
+    },
+    edit_options={'edit': True}
+)
+draw.add_to(m)
+
+
 # Legend with black text
 legend_html = """
      <div style="
