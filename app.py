@@ -42,8 +42,8 @@ st.markdown(
 
 # ------------------ SIDEBAR: FISH OBSERVATION ------------------
 st.sidebar.header("Add Fish Observation")
-lat = st.sidebar.number_input("Latitude (°N)", min_value=20.0, max_value=30.0, value=25.35, step=0.0001)
-lon = st.sidebar.number_input("Longitude (°E)", min_value=50, max_value=60, value=55.4, step=0.0001)
+lat = st.sidebar.number_input("Latitude (°N)", value=25.35, step=0.0001)
+lon = st.sidebar.number_input("Longitude (°E)", value=55.4, step=0.0001)
 fish_type = st.sidebar.selectbox("Fish Ecotype", ["Juvenile", "Migratory", "Resident"])
 
 # ------------------ SESSION STATE ------------------
@@ -58,14 +58,11 @@ if st.sidebar.button("Clear All Markers"):
 
 # ------------------ MAP AND INSTRUCTIONS ------------------
 st.subheader("🐟 Tuna Migration Map")
-
-# Create columns: left for map, right for instructions
 map_col, info_col = st.columns([3, 1])
 
 with map_col:
     m = folium.Map(location=[25.35, 55.4], zoom_start=11)
 
-    # Add fish markers
     fish_styles = {
         "Juvenile": {"color": "blue", "icon": "fish"},
         "Migratory": {"color": "green", "icon": "fish"},
@@ -80,7 +77,6 @@ with map_col:
             icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
         ).add_to(m)
 
-    # Legend
     legend_html = """
     <div style="
     position: fixed; 
@@ -96,10 +92,8 @@ with map_col:
     """
     m.get_root().html.add_child(folium.Element(legend_html))
 
-    # Display map
     st_folium(m, width=900, height=600)
 
-    # Download Map
     map_html = m._repr_html_().encode("utf-8")
     st.download_button(
         label="📥 Download Map as HTML (Interactive)",
@@ -126,7 +120,6 @@ with info_col:
 
 # ------------------ ECOTYPE DISTRIBUTION ------------------
 st.subheader("📊 Ecotype Distribution Input")
-
 groups = ["Juvenile", "Migratory", "Resident"]
 categories = ["أنثى مهاجرة", "أنثى خليط الجينات", "أنثى مقيمة", "ذكر مهاجر", "ذكر خليط الجينات", "ذكر مقيم"]
 
@@ -179,6 +172,7 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
 
