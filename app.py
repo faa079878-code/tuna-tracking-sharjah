@@ -1,10 +1,8 @@
 import streamlit as st
 import folium
-from folium.plugins import Draw
 from streamlit_folium import st_folium
 from io import BytesIO
 import base64
-import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
@@ -47,19 +45,15 @@ st.sidebar.header("Add Fish Observation")
 lat = st.sidebar.number_input("Latitude (°N)", min_value=24.0, max_value=26.0, value=25.35, step=0.0001)
 lon = st.sidebar.number_input("Longitude (°E)", min_value=55.0, max_value=56.5, value=55.4, step=0.0001)
 fish_type = st.sidebar.selectbox("Fish Ecotype", ["Juvenile", "Migratory", "Resident"])
-draw_color = st.sidebar.color_picker("Select Drawing Color", "#3388ff")
 
 # ------------------ SESSION STATE ------------------
 if "fish_data" not in st.session_state:
     st.session_state.fish_data = []
-if "drawn_shapes" not in st.session_state:
-    st.session_state.drawn_shapes = []
 
 if st.sidebar.button("Add Fish Marker"):
     st.session_state.fish_data.append({"lat": lat, "lon": lon, "type": fish_type})
 if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
-    st.session_state.drawn_shapes.clear()
     st.experimental_rerun()
 
 # ------------------ MAP ------------------
@@ -81,25 +75,6 @@ for fish in st.session_state.fish_data:
         icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
     ).add_to(m)
 
-# Add previous drawn shapes safely
-for shape in st.session_state.drawn_shapes:
-    if shape and isinstance(shape, dict):
-        folium.GeoJson(shape).add_to(m)
-
-# Add drawing tool
-draw = Draw(
-    draw_options={
-        'polyline': {'shapeOptions': {'color': draw_color, 'weight': 4, 'opacity': 0.8}},
-        'polygon': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
-        'circle': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
-        'rectangle': {'shapeOptions': {'color': draw_color, 'fillColor': draw_color, 'weight': 2, 'opacity': 0.8, 'fillOpacity': 0.4}},
-        'marker': False,
-        'circlemarker': False
-    },
-    edit_options={'edit': True}
-)
-draw.add_to(m)
-
 # Legend
 legend_html = """
 <div style="
@@ -116,11 +91,8 @@ border-radius: 8px; padding: 10px; color: black;">
 """
 m.get_root().html.add_child(folium.Element(legend_html))
 
-map_data = st_folium(m, width=900, height=600, returned_objects=["all_drawings"])
-if map_data and "all_drawings" in map_data:
-    new_shapes = map_data["all_drawings"]
-    if new_shapes and isinstance(new_shapes, list):
-        st.session_state.drawn_shapes = new_shapes
+# Display map
+st_folium(m, width=900, height=600)
 
 # Download Map
 map_html = m._repr_html_().encode("utf-8")
@@ -190,5 +162,6 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
