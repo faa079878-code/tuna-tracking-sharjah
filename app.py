@@ -53,19 +53,6 @@ for fish in st.session_state.fish_data:
         icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
     ).add_to(m)
 
-# ------------------ ADD DRAWING TOOL ------------------
-draw = Draw(
-    draw_options={
-        'polyline': True,   # Straight or bent lines
-        'polygon': True,    # Polygons
-        'circle': True,     # Circles
-        'rectangle': True,  # Rectangles
-        'marker': False,    # We already use markers
-        'circlemarker': False
-    },
-    edit_options={'edit': True}  # Enable editing/deleting shapes
-)
-draw.add_to(m)
 
 
 # ------------------ SIDEBAR: DRAW COLOR ------------------
