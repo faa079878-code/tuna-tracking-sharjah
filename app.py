@@ -58,8 +58,6 @@ if st.sidebar.button("Clear All Markers"):
 
 # ------------------ MAP AND INSTRUCTIONS ------------------
 st.subheader("🐟 Tuna Migration Map")
-
-# Create columns: left for map, right for instructions
 map_col, info_col = st.columns([3, 1])
 
 with map_col:
@@ -111,17 +109,30 @@ with map_col:
 with info_col:
     st.markdown(
         """
-        ### How to Use the Map
-        1. **Enter Latitude and Longitude** in the sidebar to set the location of the fish sighting.
-        2. **Select Fish Ecotype** from the dropdown menu (Juvenile, Migratory, Resident).
-        3. **Click 'Add Fish Marker'** to place the marker on the map.
-        4. **Markers are color-coded**:
-            - Blue: Juvenile
-            - Green: Migratory
-            - Red: Resident
-        5. **Clear All Markers** to reset the map.
-        6. **Download the map** as an interactive HTML to save your observations.
-        """
+        <div style="
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        ">
+        <h4>How to Use the Map</h4>
+        <ol>
+            <li><b>Enter Latitude and Longitude</b> in the sidebar to set the location of the fish sighting.</li>
+            <li><b>Select Fish Ecotype</b> from the dropdown menu (Juvenile, Migratory, Resident).</li>
+            <li><b>Click 'Add Fish Marker'</b> to place the marker on the map.</li>
+            <li><b>Markers are color-coded</b>:
+                <ul>
+                    <li>Blue: Juvenile</li>
+                    <li>Green: Migratory</li>
+                    <li>Red: Resident</li>
+                </ul>
+            </li>
+            <li><b>Clear All Markers</b> to reset the map.</li>
+            <li><b>Download the map</b> as an interactive HTML to save your observations.</li>
+        </ol>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 # ------------------ ECOTYPE DISTRIBUTION ------------------
@@ -179,6 +190,7 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
 
