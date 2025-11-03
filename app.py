@@ -52,9 +52,11 @@ if "fish_data" not in st.session_state:
 
 if st.sidebar.button("Add Fish Marker"):
     st.session_state.fish_data.append({"lat": lat, "lon": lon, "type": fish_type})
+
 if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
-    st.experimental_rerun()
+    st.success("All markers cleared!")
+    st.stop()  # stops script and safely reruns
 
 # ------------------ MAP AND INSTRUCTIONS ------------------
 st.subheader("🐟 Tuna Migration Map")
@@ -77,6 +79,7 @@ with map_col:
             icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
         ).add_to(m)
 
+    # Legend
     legend_html = """
     <div style="
     position: fixed; 
@@ -94,6 +97,7 @@ with map_col:
 
     st_folium(m, width=900, height=600)
 
+    # Download Map
     map_html = m._repr_html_().encode("utf-8")
     st.download_button(
         label="📥 Download Map as HTML (Interactive)",
@@ -172,6 +176,7 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
 
