@@ -56,57 +56,77 @@ if st.sidebar.button("Clear All Markers"):
     st.session_state.fish_data.clear()
     st.experimental_rerun()
 
-# ------------------ MAP ------------------
+# ------------------ MAP AND INSTRUCTIONS ------------------
 st.subheader("🐟 Tuna Migration Map")
-m = folium.Map(location=[25.35, 55.4], zoom_start=11)
 
-# Add fish markers
-fish_styles = {
-    "Juvenile": {"color": "blue", "icon": "fish"},
-    "Migratory": {"color": "green", "icon": "fish"},
-    "Resident": {"color": "red", "icon": "fish"}
-}
+# Create columns: left for map, right for instructions
+map_col, info_col = st.columns([3, 1])
 
-for fish in st.session_state.fish_data:
-    style = fish_styles[fish["type"]]
-    folium.Marker(
-        location=[fish["lat"], fish["lon"]],
-        tooltip=f"{fish['type']} Fish\nLat: {fish['lat']:.4f}, Lon: {fish['lon']:.4f}",
-        icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
-    ).add_to(m)
+with map_col:
+    m = folium.Map(location=[25.35, 55.4], zoom_start=11)
 
-# Legend
-legend_html = """
-<div style="
-position: fixed; 
-bottom: 50px; left: 50px; width: 180px; height: 120px; 
-background-color: rgba(255, 255, 255, 0.85);
-border:2px solid grey; z-index:9999; font-size:14px;
-border-radius: 8px; padding: 10px; color: black;">
-<b>Fish Ecotype Legend</b><br>
-<i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
-<i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
-<i class="fa fa-fish fa-1x" style="color:red"></i>&nbsp; Resident
-</div>
-"""
-m.get_root().html.add_child(folium.Element(legend_html))
+    # Add fish markers
+    fish_styles = {
+        "Juvenile": {"color": "blue", "icon": "fish"},
+        "Migratory": {"color": "green", "icon": "fish"},
+        "Resident": {"color": "red", "icon": "fish"}
+    }
 
-# Display map
-st_folium(m, width=900, height=600)
+    for fish in st.session_state.fish_data:
+        style = fish_styles[fish["type"]]
+        folium.Marker(
+            location=[fish["lat"], fish["lon"]],
+            tooltip=f"{fish['type']} Fish\nLat: {fish['lat']:.4f}, Lon: {fish['lon']:.4f}",
+            icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
+        ).add_to(m)
 
-# Download Map
-map_html = m._repr_html_().encode("utf-8")
-st.download_button(
-    label="📥 Download Map as HTML (Interactive)",
-    data=map_html,
-    file_name="sharjah_tuna_map.html",
-    mime="text/html"
-)
+    # Legend
+    legend_html = """
+    <div style="
+    position: fixed; 
+    bottom: 50px; left: 50px; width: 180px; height: 120px; 
+    background-color: rgba(255, 255, 255, 0.85);
+    border:2px solid grey; z-index:9999; font-size:14px;
+    border-radius: 8px; padding: 10px; color: black;">
+    <b>Fish Ecotype Legend</b><br>
+    <i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
+    <i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
+    <i class="fa fa-fish fa-1x" style="color:red"></i>&nbsp; Resident
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_html))
+
+    # Display map
+    st_folium(m, width=900, height=600)
+
+    # Download Map
+    map_html = m._repr_html_().encode("utf-8")
+    st.download_button(
+        label="📥 Download Map as HTML (Interactive)",
+        data=map_html,
+        file_name="sharjah_tuna_map.html",
+        mime="text/html"
+    )
+
+with info_col:
+    st.markdown(
+        """
+        ### How to Use the Map
+        1. **Enter Latitude and Longitude** in the sidebar to set the location of the fish sighting.
+        2. **Select Fish Ecotype** from the dropdown menu (Juvenile, Migratory, Resident).
+        3. **Click 'Add Fish Marker'** to place the marker on the map.
+        4. **Markers are color-coded**:
+            - Blue: Juvenile
+            - Green: Migratory
+            - Red: Resident
+        5. **Clear All Markers** to reset the map.
+        6. **Download the map** as an interactive HTML to save your observations.
+        """
+    )
 
 # ------------------ ECOTYPE DISTRIBUTION ------------------
 st.subheader("📊 Ecotype Distribution Input")
 
-# Groups and categories
 groups = ["Juvenile", "Migratory", "Resident"]
 categories = ["أنثى مهاجرة", "أنثى خليط الجينات", "أنثى مقيمة", "ذكر مهاجر", "ذكر خليط الجينات", "ذكر مقيم"]
 
@@ -123,10 +143,8 @@ for group in groups:
         st.warning(f"The total percentage for the ({group}) group is ({total}). It must be equal to 100%.")
     data[group] = group_data
 
-# Convert to DataFrame
 df = pd.DataFrame(data)
 
-# Plot
 fig, ax = plt.subplots(figsize=(6,5))
 colors = ["lightgrey","grey","dimgray","lightgrey","grey","dimgray"]
 hatches = [None,None,None,"//","//","//"]
@@ -145,7 +163,6 @@ ax.legend(bbox_to_anchor=(1.05,1), loc='upper left', labels=labels_rtl)
 
 st.pyplot(fig)
 
-# Save figure to buffer
 buf = io.BytesIO()
 fig.savefig(buf, format="png", dpi=300, bbox_inches="tight")
 buf.seek(0)
@@ -162,6 +179,7 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
 
 
 
