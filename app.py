@@ -68,7 +68,7 @@ legend_html = """
      bottom: 50px; left: 50px; width: 180px; height: 120px; 
      background-color: rgba(255, 255, 255, 0.85);
      border:2px solid grey; z-index:9999; font-size:14px;
-     border-radius: 8px; padding: 10px;">
+     border-radius: 8px; padding: 10px; color: black;">
      <b>Fish Ecotype Legend</b><br>
      <i class="fa fa-fish fa-1x" style="color:blue"></i>&nbsp; Juvenile<br>
      <i class="fa fa-fish fa-1x" style="color:green"></i>&nbsp; Migratory<br>
