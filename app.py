@@ -62,9 +62,10 @@ for fish in st.session_state.fish_data:
         icon=folium.Icon(color=style["color"], icon=style["icon"], prefix='fa')
     ).add_to(m)
 
-# Add previous drawn shapes
+# Add previous drawn shapes safely
 for shape in st.session_state.drawn_shapes:
-    folium.GeoJson(shape).add_to(m)
+    if shape and isinstance(shape, dict):
+        folium.GeoJson(shape).add_to(m)
 
 # ------------------ ADD DRAWING TOOL ------------------
 draw = Draw(
@@ -99,9 +100,11 @@ m.get_root().html.add_child(folium.Element(legend_html))
 # ------------------ DISPLAY MAP ------------------
 map_data = st_folium(m, width=900, height=600, returned_objects=["all_drawings"])
 
-# Store drawn shapes in session state
+# Store drawn shapes in session state safely
 if map_data and "all_drawings" in map_data:
-    st.session_state.drawn_shapes = map_data["all_drawings"]
+    new_shapes = map_data["all_drawings"]
+    if new_shapes and isinstance(new_shapes, list):
+        st.session_state.drawn_shapes = new_shapes
 
 # ------------------ DOWNLOAD AS INTERACTIVE HTML ------------------
 map_html = m._repr_html_().encode("utf-8")
@@ -117,3 +120,4 @@ st.markdown("""
 ---
 Developed for the study of **Tuna migratory behavior** along the Sharjah coastal waters.
 """)
+
