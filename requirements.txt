@@ -2,3 +2,9 @@ streamlit
 folium
 streamlit-folium
 selenium
+pandas
+matplotlib
+numpy
+arabic-reshaper
+python-bidi
+
