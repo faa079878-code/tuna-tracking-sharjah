@@ -71,24 +71,15 @@ m.get_root().html.add_child(folium.Element(legend_html))
 # ------------------ DISPLAY MAP ------------------
 st_folium(m, width=900, height=600)
 
-# ------------------ DOWNLOAD AS IMAGE ------------------
-def get_map_image(map_object):
-    """Save folium map as PNG using Selenium."""
-    tempdir = tempfile.mkdtemp()
-    map_path = os.path.join(tempdir, "map.html")
-    map_object.save(map_path)
+# ------------------ DOWNLOAD AS INTERACTIVE HTML ------------------
+map_html = m._repr_html_().encode("utf-8")
 
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1200,800")
-
-    with webdriver.Chrome(options=options) as driver:
-        driver.get(f"file://{map_path}")
-        png = driver.get_screenshot_as_png()
-
-    return png
+st.download_button(
+    label="📥 Download Map as HTML (Interactive)",
+    data=map_html,
+    file_name="sharjah_tuna_map.html",
+    mime="text/html"
+)
 
 # Create download button
 if st.button("📥 Download Map as Image (PNG)"):
